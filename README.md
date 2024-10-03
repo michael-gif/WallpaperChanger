@@ -13,7 +13,8 @@ Windows 10 wallpaper changer to be used with Task Scheduler
 - Set task trigger time
 ![set task trigger time](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_trigger_time.png)
 - Set task action
-![set task trigger time](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_action.png)
+![set task action](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_action.png)
 - Set action options
-![set task trigger time](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_action_options.png)
-- Done
+![set action options](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_action_options.png)
+- Click finish
+![press finish](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/press_finish.png)
