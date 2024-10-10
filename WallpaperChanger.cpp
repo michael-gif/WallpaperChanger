@@ -33,19 +33,33 @@ std::string getRandomWallpaper(std::vector<std::string>& wallpapers) {
     return wallpapers[randomIndex];
 }
 
-bool setWallpaper(std::string& wallpaperPath) {
+struct Error {
+    DWORD* errorCode;
+    LPVOID* errorMessage;
+};
+
+bool setWallpaper(std::string& wallpaperPath, Error& error) {
     bool result = SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, (PVOID)wallpaperPath.c_str(), SPIF_UPDATEINIFILE | SPIF_SENDWININICHANGE);
     if (result) {
         std::cout << "Wallpaper changed successfully!" << std::endl;
         return true;
     }
     else {
+        *error.errorCode = GetLastError();
+        FormatMessageA(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            nullptr,
+            *error.errorCode,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),  // Default language
+            (LPSTR)&error.errorMessage,  // Output buffer
+            0,
+            nullptr);
         std::cout << "Failed to change wallpaper." << std::endl;
         return false;
     }
 }
 
-void createLogFile(bool success, std::string& retrievedWallpaperPath, std::vector<std::string>& wallpapers, std::string& newWallpaper) {
+void createLogFile(bool success, Error& error, std::string& retrievedWallpaperPath, std::vector<std::string>& wallpapers, std::string& newWallpaper) {
     auto now = std::chrono::system_clock::now();
     std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
 
@@ -69,6 +83,10 @@ void createLogFile(bool success, std::string& retrievedWallpaperPath, std::vecto
     std::ofstream logFile(logFileName);
     if (logFile.is_open()) {
         logFile << "Wallpaper change: " << (success ? "Success!" : "Failed") << "\n";
+        if (!success) {
+            logFile << "ErrorCode: " << error.errorCode << std::endl;
+            logFile << "ErrorMesage: \n" << (char*)error.errorMessage << std::endl;
+        }
         logFile << "Current wallpaper: " << retrievedWallpaperPath << "\n";
         logFile << "Potential wallpapers:\n";
         for (size_t i = 0; i < wallpapers.size(); ++i) 
@@ -95,7 +113,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     std::string wallpaperFolderPath = argv[1];
     getWallpapersFromFolder(wallpapers, currentWallpaperPath, wallpaperFolderPath);
     std::string newWallpaper = getRandomWallpaper(wallpapers);
-    bool success = setWallpaper(newWallpaper);
-    createLogFile(success, currentWallpaperPath, wallpapers, newWallpaper);
+    Error error;
+    bool success = setWallpaper(newWallpaper, error);
+    LocalFree(error.errorMessage);
+    createLogFile(success, error, currentWallpaperPath, wallpapers, newWallpaper);
     return 0;
 }

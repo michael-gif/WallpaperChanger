@@ -18,3 +18,7 @@ Windows 10 wallpaper changer to be used with Task Scheduler
 ![set action options](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/task_action_options.png)
 - Click finish  
 ![press finish](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/press_finish.png)
+
+# Note
+In the properties of the task, security options must be set to have the task run when the user is logged in. Otherwise the task will not work:  
+![security options](https://github.com/michael-gif/WallpaperChanger/blob/main/resources/security_options.png)
